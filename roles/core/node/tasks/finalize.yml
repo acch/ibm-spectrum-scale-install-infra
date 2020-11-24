@@ -2,7 +2,7 @@
 # Print messages collected during play
 
 - block:  ## run_once: true
-    - name: finalize | Check if GPFS RPMs were updated
+    - name: finalize | Check if GPFS packages were updated
       vars:
         msg: |-
           ######################################################################

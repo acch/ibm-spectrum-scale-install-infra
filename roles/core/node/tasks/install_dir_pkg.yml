@@ -1,5 +1,5 @@
 ---
-# directory package installation method
+# Directory installation method
 
 - block:  ## run_once: true
     - name: install | Stat directory installation package
@@ -12,12 +12,11 @@
         that: scale_install_dirpkg.stat.exists
         msg: >-
           Please set the variable 'scale_install_directory_pkg_path' to point to the
-          local installation package (accessible on Ansible control machine)!
+          local installation directory (accessible on Ansible control machine)!
   run_once: true
   delegate_to: localhost
 
-
-- name: install| Creates default directory
+- name: install| Create default directory
   file:
     path: "{{ scale_extracted_path }}"
     state: directory
@@ -30,35 +29,33 @@
   register: scale_install_gpfs_packagedir
 
 #
-# Copy installation directory package
+# Copy installation directory
 #
+- name: install | Copy installation directory to node
+  copy:
+    src: "{{ scale_install_directory_pkg_path }}"
+    dest: "{{ scale_extracted_path }}"
+    mode: a+x
 
-- block:
-    - name: install | Copy installation package to node
-      copy:
-        src: "{{ scale_install_directory_pkg_path }}"
-        dest: "{{ scale_extracted_path }}"
-        mode: a+x
-
-- name: install | Set installation package path
+- name: install | Set installation directory path
   set_fact:
     dir_path: "{{ scale_extracted_path + '/' + scale_install_directory_pkg_path | basename }}"
 
-- name: install | gpfs base path
+- name: install | Set GPFS base path
   set_fact:
     scale_gpfs_path_url: "{{ dir_path }}"
   when: scale_install_directory_pkg_path is defined
 
 #
-# Find GPFS BASE
+# Find GPFS gpfs.base
 #
-- name: install | Find GPFS BASE (gpfs.base) package
+- name: install | Find GPFS base (gpfs.base) package
   find:
     paths: "{{ dir_path }}"
     patterns: gpfs.base*{{ scale_architecture }}*
   register: scale_install_gpfs_base
 
-- name: install | Check valid GPFS BASE (gpfs.base) package
+- name: install | Check valid GPFS base (gpfs.base) package
   assert:
     that: scale_install_gpfs_base.matched > 0
     msg: >-
@@ -84,29 +81,29 @@
 #
 # Find GPFS gpfs.msg.en_US
 #
-- name: install | Find gpfs.msg.en_US (gpfs.msg.en_US) package
+- name: install | Find GPFS messages (gpfs.msg.en_US) package
   find:
     paths: "{{ dir_path }}"
     patterns: gpfs.msg.en*
   register: scale_install_gpfs_msg
 
-- name: install | Check valid GPFS (gpfs.msg.en_US) package
+- name: install | Check valid GPFS messages (gpfs.msg.en_US) package
   assert:
     that: scale_install_gpfs_msg.matched > 0
     msg: >-
-      No GPFS BASE (gpfs.base) package found:
+      No GPFS base (gpfs.base) package found:
       {{ dir_path }}/gpfs.msg.en*
 
 #
 # Find GPFS gpfs.compression
 #
-- name: install | Find GPFS Compression (gpfs.compression) package
+- name: install | Find GPFS compression (gpfs.compression) package
   find:
     paths: "{{ dir_path }}"
     patterns: gpfs.compression*{{ scale_architecture }}*
   register: scale_install_gpfs_compression
 
-- name: install | Check valid GPFS Compression(gpfs.compression) package
+- name: install | Check valid GPFS compression (gpfs.compression) package
   debug:
     msg: >-
       No GPFS Compression (gpfs.compression) package found:
@@ -163,8 +160,7 @@
 #
 # Add GPFS Packages for building GPL module from source
 #
-
-- name: install | Find GPFS gpl (gpfs.gpl) package
+- name: install | Find GPFS GPL (gpfs.gpl) package
   find:
     paths: "{{ dir_path }}"
     patterns: gpfs.gpl*
