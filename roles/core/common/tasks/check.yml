@@ -89,14 +89,14 @@
   when: hostvars[inventory_hostname].scale_daemon_nodename is undefined
 
 # Set dynamic variables based on supported OS
-- name: check | Set variables based on yum/dnf based OS
+- name: check | Set variables for RHEL based OS
   include: yum/set_vars.yml
   when: ansible_distribution in scale_rhel_distribution
 
-- name: check | Set variables based on apt based os
+- name: check | Set variables for Ubuntu based OS
   include: apt/set_vars.yml
   when: ansible_distribution in scale_ubuntu_distribution
 
-- name: check | Set variables based on zypper based OS
+- name: check | Set variables for SLES based OS
   include: zypper/set_vars.yml
   when: ansible_distribution in scale_sles_distribution

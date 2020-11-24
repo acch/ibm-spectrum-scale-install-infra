@@ -1,5 +1,5 @@
 ---
-# Common role for  IBM Spectrum Scale (GPFS)
+# Common role for IBM Spectrum Scale (GPFS)
 
 - import_tasks: check.yml
   tags: always
